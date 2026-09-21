@@ -41,7 +41,7 @@
     "test:hooks": "pnpm --filter @remake/hooks test"
   },
   "devDependencies": {
-    "@capacitor/android": "^7.6.9",
+    "@capacitor/android": "^8.5.2",
     "@capacitor/cli": "^7.6.9",
     "@types/bun": "^1.4.0",
     "@typescript-eslint/eslint-plugin": "^8.68.0",
@@ -58,7 +58,7 @@
     "thirdparty/*"
   ],
   "dependencies": {
-    "@capacitor/core": "^7.6.9",
+    "@capacitor/core": "^8.5.2",
     "@capacitor/filesystem": "^7.1.8",
     "@capacitor/share": "^7.0.4"
   }
