@@ -1,0 +1,14 @@
+appId: com.skyzenglu.liferestart
+productName: 人生重开 · 禄
+directories:
+  output: dist-electron
+files:
+  - desktop/**/*
+  - apps/web/dist/**/*
+  - package.json
+win:
+  target:
+    - portable
+  artifactName: 人生重开-禄-${version}-便携版.${ext}
+portable:
+  artifactName: 人生重开-禄-${version}-便携版.exe
