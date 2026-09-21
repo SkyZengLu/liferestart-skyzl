@@ -45,7 +45,7 @@
     "@capacitor/cli": "^7.6.9",
     "@types/bun": "^1.4.0",
     "@typescript-eslint/eslint-plugin": "^8.68.0",
-    "@typescript-eslint/parser": "^8.68.0",
+    "@typescript-eslint/parser": "^8.70.0",
     "@typescript/native": "npm:typescript@^7.0.2",
     "electron": "^38.8.6",
     "electron-builder": "^26.15.3",
