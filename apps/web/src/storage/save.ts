@@ -2,8 +2,9 @@ import { Capacitor } from '@capacitor/core'
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem'
 import { Share } from '@capacitor/share'
 import { logLine } from './logger'
+import { CheatModeKey, applyCheatMode } from './cheat'
 
-const SaveKeys = ['profile', 'unique', 'version', 'theme'] as const
+const SaveKeys = ['profile', 'unique', 'version', 'theme', CheatModeKey] as const
 type SaveKey = (typeof SaveKeys)[number]
 type SavePayload = Partial<Record<SaveKey, string | null>>
 
@@ -54,6 +55,8 @@ function applyData(data: SavePayload) {
         else localStorage.setItem(key, value)
     }
     localStorage.setItem('version', '3.0.0')
+    // 存档里的 cheatmode 决定【我的天赋我做主】是否解锁
+    applyCheatMode(data[CheatModeKey])
 }
 
 function saveFileName() {

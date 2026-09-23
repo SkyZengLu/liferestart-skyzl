@@ -3,6 +3,7 @@ import { atom, useAtom } from 'jotai'
 import { useConfigInject, useProfileInject, useRawProfile } from '@remake/hooks'
 import { useUniqueInject, useUnique } from '@remake/hooks'
 import { init, get, set } from '@/storage'
+import { ensureCheatModeField } from '@/storage/cheat'
 import { config } from '@/config'
 
 const initedAtom = atom(false)
@@ -16,6 +17,8 @@ export const useInit = () => {
         if (inited) return
         configInject(config)
         await init()
+        // 补默认的 cheatmode 字段，便于导出存档后手动改写
+        ensureCheatModeField()
         const profile = await get('profile')
         const parsed = profile ? JSON.parse(profile) || {} : {}
         profileInject({

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
     useTalentPuller,
     useTalentPicker,
@@ -6,10 +6,13 @@ import {
     useTalentSubmit,
     useSubmitIsEnable,
     useMode,
+    useSetStep,
     Mode,
+    Step,
 } from '@remake/hooks'
 import { talents as allTalents } from '@remake/data'
 import { PullCount, dev } from '@/config'
+import { useCheatMode } from '@/storage/cheat'
 import { toastMsg } from '@/toast'
 import Talent from '@/components/Talent'
 import { logLine } from '@/storage/logger'
@@ -37,6 +40,12 @@ export function Pick() {
             }),
         [],
     )
+    // 作弊模式失效时（例如导入了普通存档）回到模式选择，避免卡在空列表
+    const cheatMode = useCheatMode()
+    const setStep = useSetStep()
+    useEffect(() => {
+        if (isCustom && !cheatMode) setStep(Step.Mode)
+    }, [isCustom, cheatMode, setStep])
     const msg = enabled
         ? '下一步'
         : `请选取 ${min == max ? min : `${min}~${max}`} 个天赋`
