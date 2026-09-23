@@ -1,0 +1,37 @@
+{
+    "name": "@remake/web",
+    "type": "module",
+    "version": "3.0.0",
+    "author": "Vick Scarlet <vick@syaro.io>",
+    "scripts": {
+        "dev": "vite",
+        "dev:prod": "vite --mode production",
+        "build": "vite build",
+        "build:bili": "vite build --config vite.config.bili.ts",
+        "preview": "vite preview",
+        "lint": "eslint",
+        "test": "vitest"
+    },
+    "dependencies": {
+        "@capacitor/core": "^7.6.9",
+        "@capacitor/filesystem": "^7.1.8",
+        "@capacitor/share": "^7.0.4",
+        "@remake/data": "workspace:*",
+        "@remake/hooks": "workspace:*",
+        "@remake/thirdparty-bili-toy": "workspace:*",
+        "@remake/vitex": "workspace:*",
+        "jotai": "^2.20.3",
+        "react": "^19.2.8",
+        "react-dom": "^19.2.8",
+        "react-hot-toast": "^2.6.0"
+    },
+    "devDependencies": {
+        "@types/react": "^19.2.18",
+        "@types/react-dom": "^19.2.5",
+        "@vitejs/plugin-react": "^6.1.0",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "vite": "^8.2.2",
+        "vitest": "^4.1.11"
+    }
+}
