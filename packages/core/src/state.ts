@@ -45,6 +45,8 @@ export interface GhostRouteState {
     items: string[]
     fiveGhostChecked: boolean
     becameAlien: boolean
+    /** 路线已终结（100 岁肢解）；避免被【生生不息】复活后每年重新判定 */
+    dead?: boolean
 }
 
 /** 持久化存储的数据 */

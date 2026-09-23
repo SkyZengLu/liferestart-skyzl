@@ -7,7 +7,7 @@ import type { ReplacementResult, AdditionalPoints } from './talent'
 import { pull, exclude, replacement, additionalPoints } from './talent'
 import { trigger as ttr } from './talent'
 import { trigger as atr } from './achievement'
-import { trigger as etr, check as ec } from './event'
+import { trigger as etr, check as ec, shouldEndlessRevive } from './event'
 import type { RNG } from '@remake/vitex'
 import { pick as pickOne, pickWeight, random } from '@remake/vitex'
 import { produce, enableMapSet } from 'immer'
@@ -15,6 +15,7 @@ import {
     BreakthroughEventIds,
     ColorfulTalent,
     DaoEventIds,
+    EndlessReviveEventId,
 } from './talents'
 import {
     GhostNames,
@@ -96,6 +97,19 @@ function setStrength(state: GameState, value: number) {
     })
 }
 
+/** 本次事件是否已经把角色真的弄死了（用于兜底判断） */
+function shouldForceDeath(state: GameState) {
+    if (state.life >= 1) return false
+    // 拥有【生生不息】且智力为负时，濒死会被复活，不算真死
+    if (
+        state.talents.has(ColorfulTalent.ShengShengBuXi) &&
+        state.props.current.intelligence < 0
+    ) {
+        return false
+    }
+    return true
+}
+
 function finishRoute(
     state: GameState,
     profile: ProfileState,
@@ -134,14 +148,34 @@ function nextGhostRoute(
         return finishRoute(er.state, profile, age, er.triggers, talents)
     }
 
+    // 路线已终结：不再参与后续判定，交回普通事件流程
+    if (route.dead) return null
     if (isGodCondition(route.ghosts, route.items)) {
         const er = etr(GhostRouteEvent.God, state, profile)
         return finishRoute(er.state, profile, age, er.triggers, talents)
     }
 
     if (age >= 100) {
+        // 肢解是路线级终结。若放任【生生不息】每年救回来，玩家会被永久
+        // 卡在 100 岁（日志里出现过连续 91 年原地踏步）。
+        // 所以：能救的当场救回并标记路线终结，之后不再重复判定，人生继续。
+        // 注意：etr 内部的【生生不息】逻辑可能已经把这次肢解救回来了
+        // （er.state.life 会回到 1），所以这里判断"是否已复活"，
+        // 而不是再算一遍触发条件。
         const er = etr(GhostRouteEvent.Dismember, state, profile)
-        return finishRoute(er.state, profile, age, er.triggers, talents)
+        if (er.state.life >= 1) {
+            // 已复活：标记路线终结，之后交回普通事件流程，人生继续
+            const revived = produce(er.state, draft => {
+                if (draft.ghostRoute) draft.ghostRoute.dead = true
+            })
+            return finishRoute(revived, profile, age, er.triggers, talents)
+        }
+        // 没能复活：正常终结
+        const dead = produce(er.state, draft => {
+            draft.life = 0
+            if (draft.ghostRoute) draft.ghostRoute.dead = true
+        })
+        return finishRoute(dead, profile, age, er.triggers, talents)
     }
 
     if (!route.fiveGhostChecked && route.ghosts.length >= 5) {
@@ -304,15 +338,21 @@ export function next(
     }
     const er = etr(event, tr.state, profile)
     const ar = atr(Ao.Trajectory, er.state, profile)
-    // 兜底：【生生不息】复活后若仍处于必死状态（如事件池耗尽），直接结束，避免卡死
     let finalState = ar.state
-    if (
-        finalState.life < 1 &&
-        finalState.talents.has(ColorfulTalent.ShengShengBuXi)
-    ) {
-        finalState = produce(finalState, draft => {
-            draft.life = 0
-        })
+    if (finalState.life < 1) {
+        if (shouldForceDeath(finalState)) {
+            // 确实死了：把生命值落定为 0，结束这一世
+            finalState = produce(finalState, draft => {
+                draft.life = 0
+            })
+        } else {
+            // 【生生不息】仍能救（智力为负）：复活
+            finalState = produce(finalState, draft => {
+                draft.life = 1
+                if (draft.props.current.age < 0) draft.props.current.age = 0
+                draft.events.add(EndlessReviveEventId)
+            })
+        }
     }
     const end = finalState.life < 1
     return {
