@@ -82,8 +82,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/vitex
       jotai:
-        specifier: ^2.20.3
-        version: 2.20.3(@babel/core@7.29.7(supports-color@7.2.0))(@babel/template@7.29.7)(@types/react@19.2.18)(react@19.2.8)
+        specifier: ^3.0.0
+        version: 3.0.0(@types/react@19.2.18)(react@19.2.8)
       react:
         specifier: ^19.2.8
         version: 19.2.8
@@ -1866,6 +1866,18 @@ packages:
         optional: true
       '@babel/template':
         optional: true
+      '@types/react':
+        optional: true
+      react:
+        optional: true
+
+  jotai@3.0.0:
+    resolution: {integrity: sha512-KxhbmsJUp/tmrv6aZgO+nzB3H9K8C0xmk5i3aGkwy/EANg73DVBkggv3zVHaAi5PlNlQgTgP4uiVepo+JC+wSA==}
+    engines: {node: '>=22.12.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      react: '>=18.0.0'
+    peerDependenciesMeta:
       '@types/react':
         optional: true
       react:
@@ -4944,6 +4956,11 @@ snapshots:
     optionalDependencies:
       '@babel/core': 7.29.7(supports-color@7.2.0)
       '@babel/template': 7.29.7
+      '@types/react': 19.2.18
+      react: 19.2.8
+
+  jotai@3.0.0(@types/react@19.2.18)(react@19.2.8):
+    optionalDependencies:
       '@types/react': 19.2.18
       react: 19.2.8
 
